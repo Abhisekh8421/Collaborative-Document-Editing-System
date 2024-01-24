@@ -70,7 +70,7 @@ const Texteditor = () => {
       console.log("connected", socket.id);
     });
     socket.on("disconnect", () => {
-      console.log("disconnected");
+      console.log("disconnected ");
     });
     return () => {
       socket.disconnect();

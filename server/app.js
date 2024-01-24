@@ -29,7 +29,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("User Connected", socket.id); for debugging p
+  // console.log("User Connected", socket.id); for debugging purpose
   socket.on("get-document", (documentId) => {
     const data = "";
     socket.join(documentId);

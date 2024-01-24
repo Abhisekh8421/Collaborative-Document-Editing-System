@@ -75,7 +75,7 @@ const Texteditor = () => {
     return () => {
       socket.disconnect();
     };
-  }, [socket]);
+  }, [socket]);//for connecting purpose
 
   const wrapperRef = useCallback(
     (wrapper) => {

@@ -35,7 +35,7 @@ const Texteditor = () => {
       quill.enable();
     });
     socket.emit("get-document", documentId);
-  }, [socket, documentId, quill]);
+  }, [socket, documentId, quill]); // for collaborative editing 
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -49,7 +49,7 @@ const Texteditor = () => {
     return () => {
       socket.off("receive-changes", handler);
     };
-  }, [socket, quill]);
+  }, [socket, quill]);// for receive the data from server 
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -62,7 +62,7 @@ const Texteditor = () => {
     return () => {
       quill.off("text-change", handler);
     };
-  }, [socket, quill]);
+  }, [socket, quill]); // for sending the data to frontend 
 
   useEffect(() => {
     socket.on("connect", () => {

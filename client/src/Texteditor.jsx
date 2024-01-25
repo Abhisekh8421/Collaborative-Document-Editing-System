@@ -35,7 +35,7 @@ const Texteditor = () => {
       quill.enable();
     });
     socket.emit("get-document", documentId);
-  }, [socket, documentId, quill]); // for collaborative editing 
+  }, [socket, documentId, quill]); // for collaborative editing
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -49,7 +49,7 @@ const Texteditor = () => {
     return () => {
       socket.off("receive-changes", handler);
     };
-  }, [socket, quill]);// for receive the data from server 
+  }, [socket, quill]); // for receive the data from server
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -62,7 +62,7 @@ const Texteditor = () => {
     return () => {
       quill.off("text-change", handler);
     };
-  }, [socket, quill]); // for sending the data to frontend 
+  }, [socket, quill]); // for sending the data to frontend
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -75,7 +75,20 @@ const Texteditor = () => {
     return () => {
       socket.disconnect();
     };
-  }, [socket]);//for connecting purpose
+  }, [socket]); //for connecting purpose
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+    const interval = setInterval(() => {
+      const currentContents = quill.getContents();
+      console.log("Saving document with contents:", currentContents);
+      socket.emit("save-document", currentContents);
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [socket, quill]);
 
   const wrapperRef = useCallback(
     (wrapper) => {

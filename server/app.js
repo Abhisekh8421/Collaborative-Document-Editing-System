@@ -3,6 +3,8 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import cors from "cors";
 import dotenv from "dotenv";
+import { connectdb } from "./db/user_db.js";
+import Document from "./models/user_model.js";
 dotenv.config({
   path: "./.env",
 });
@@ -17,6 +19,8 @@ app.use(
   })
 );
 
+connectdb();
+
 app.get("/", (req, res) => {
   res.send("working nicely");
 });
@@ -28,16 +32,31 @@ const io = new Server(server, {
   },
 });
 
+const defaultValue = "";
+
 io.on("connection", (socket) => {
   // console.log("User Connected", socket.id); for debugging purpose
-  socket.on("get-document", (documentId) => {
-    const data = "";
+  socket.on("get-document", async (documentId) => {
+    const document = await findorcreatedocument(documentId);
     socket.join(documentId);
-    socket.emit("load-document", data);
+    socket.emit("load-document", document.data);
     socket.on("send-changes", (delta) => {
       socket.broadcast.to(documentId).emit("receive-changes", delta);
     });
+
+    socket.on("save-document", async (data) => {
+      await Document.findByIdAndUpdate(documentId, {
+        data,
+      });
+    });
   });
+
+  const findorcreatedocument = async (id) => {
+    if (!id) return;
+    const document = await Document.findById(id);
+    if (document) return document;
+    return await Document.create({ _id: id, data: defaultValue });
+  };
 
   socket.on("disconnect", () => {
     console.log(`${socket.id} is disconnected`);

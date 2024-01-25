@@ -29,7 +29,7 @@ const Texteditor = () => {
   }, []);
 
   useEffect(() => {
-    if (socket == null || quill == null) return;
+    if (socket == null || quill == null|| documentId == null ) return;
     quill.once("load-document", (document) => {
       quill.setContents(document);
       quill.enable();
@@ -78,7 +78,7 @@ const Texteditor = () => {
   }, [socket]); //for connecting purpose
 
   useEffect(() => {
-    if (socket == null || quill == null) return;
+    if (socket == null || quill == null || documentId == null) return;
     const interval = setInterval(() => {
       const currentContents = quill.getContents();
       console.log("Saving document with contents:", currentContents);
@@ -88,7 +88,7 @@ const Texteditor = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [socket, quill]);
+  }, [socket, quill,documentId]);
 
   const wrapperRef = useCallback(
     (wrapper) => {

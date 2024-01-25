@@ -31,8 +31,7 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-
-const defaultValue = "";
+const defaultValue = {};
 
 io.on("connection", (socket) => {
   // console.log("User Connected", socket.id); for debugging purpose
@@ -45,9 +44,27 @@ io.on("connection", (socket) => {
     });
 
     socket.on("save-document", async (data) => {
-      await Document.findByIdAndUpdate(documentId, {
-        data,
-      });
+      try {
+        if (!documentId) {
+          console.error("DocumentId is not defined");
+          return;
+        }
+        const document = await Document.findByIdAndUpdate(
+          documentId,
+          {
+            $set: {
+              data,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+        await document.save();
+        socket.broadcast.to(documentId).emit("receive-changes", data);
+      } catch (error) {
+        console.error("Error saving document:", error.message);
+      }
     });
   });
 

@@ -21,7 +21,7 @@ app.use(
 
 connectdb();
 
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send("working nicely");
 });
 

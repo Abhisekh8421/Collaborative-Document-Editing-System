@@ -36,7 +36,7 @@ const defaultValue = {};
 io.on("connection", (socket) => {
   // console.log("User Connected", socket.id); for debugging purpose
   socket.on("get-document", async (documentId) => {
-    const document = await findorcreatedocument(documentId);
+    const document = await findOrCreateDocument(documentId);
     socket.join(documentId);
     socket.emit("load-document", document.data);
     socket.on("send-changes", (delta) => {
@@ -52,23 +52,23 @@ io.on("connection", (socket) => {
         const document = await Document.findByIdAndUpdate(
           documentId,
           {
-            $set: {
-              data,
-            },
+            data,
           },
           {
             new: true,
+            upsert: true,
           }
         );
         await document.save();
-        socket.broadcast.to(documentId).emit("receive-changes", data);
+
+        socket.to(documentId).emit("receive-changes", document.data);
       } catch (error) {
         console.error("Error saving document:", error.message);
       }
     });
   });
 
-  const findorcreatedocument = async (id) => {
+  const findOrCreateDocument = async (id) => {
     if (!id) return;
     const document = await Document.findById(id);
     if (document) return document;

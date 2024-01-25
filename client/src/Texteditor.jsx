@@ -29,7 +29,7 @@ const Texteditor = () => {
   }, []);
 
   useEffect(() => {
-    if (socket == null || quill == null|| documentId == null ) return;
+    if (socket == null || quill == null || documentId == null) return;
     quill.once("load-document", (document) => {
       quill.setContents(document);
       quill.enable();
@@ -57,6 +57,9 @@ const Texteditor = () => {
     const handler = (delta, oldDelta, source) => {
       if (source !== "user") return;
       socket.emit("send-changes", delta);
+      // const currentContents = quill.getContents();
+      // console.log("Saving document with contents:", currentContents);
+      // socket.emit("save-document", currentContents);
     };
     quill.on("text-change", handler);
     return () => {
@@ -79,16 +82,19 @@ const Texteditor = () => {
 
   useEffect(() => {
     if (socket == null || quill == null || documentId == null) return;
-    const interval = setInterval(() => {
-      const currentContents = quill.getContents();
-      console.log("Saving document with contents:", currentContents);
-      socket.emit("save-document", currentContents);
-    }, 2000);
+    // const interval = setInterval(() => {
+    //   const currentContents = quill.getContents();
+    //   console.log("Saving document with contents:", currentContents);
+    //   socket.emit("save-document", currentContents);
+    // }, 5000);
+    const currentContents = quill.getContents();
+    console.log("Saving document with contents:", currentContents);
+    socket.emit("save-document", currentContents);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [socket, quill,documentId]);
+    // return () => {
+    //   clearInterval(interval);
+    // };
+  }, [socket, quill, documentId]);
 
   const wrapperRef = useCallback(
     (wrapper) => {
